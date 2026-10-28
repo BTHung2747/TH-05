@@ -1,5 +1,5 @@
 import React, { useMemo, useState } from 'react';
-import { FlatList, Keyboard, View } from 'react-native';
+import { Alert, FlatList, Keyboard, Text, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ChatTabScreenProps } from '../../navigation/types';
 import { HangTroChuyen } from '../../components/HangTroChuyen';
@@ -17,6 +17,9 @@ export const HomeChat = ({ navigation }: ChatTabScreenProps<'Home'>) => {
   const items = useMemo(
     () =>
       chat.troChuyen
+        .filter(item =>
+          chat.nguoiDung.some(person => person.id === item.nguoiDungId),
+        )
         .map(item => {
           const user = chat.nguoiDung.find(
             person => person.id === item.nguoiDungId,
@@ -42,10 +45,14 @@ export const HomeChat = ({ navigation }: ChatTabScreenProps<'Home'>) => {
         .filter(item => khopTimKiem(item.user.ten + ' ' + item.message, query)),
     [chat.troChuyen, chat.nguoiDung, chat.tinNhan, query],
   );
-  const open = (nguoiDungId: string) => {
+  const open = async (nguoiDungId: string) => {
     Keyboard.dismiss();
-    const troChuyenId = chat.moChat(nguoiDungId);
-    navigation.navigate('NoiDungChat', { troChuyenId });
+    try {
+      const troChuyenId = await chat.moChat(nguoiDungId);
+      navigation.navigate('NoiDungChat', { troChuyenId, nguoiDungId });
+    } catch {
+      Alert.alert('Không mở được trò chuyện', 'Kiểm tra mạng và thử lại.');
+    }
   };
   const firstName = chat.taiKhoan?.tenHienThi.split(' ').pop() || 'bạn';
   return (
@@ -59,6 +66,9 @@ export const HomeChat = ({ navigation }: ChatTabScreenProps<'Home'>) => {
         contentContainerStyle={styles.list}
         ListHeaderComponent={
           <View>
+            {!!chat.error && (
+              <Text accessibilityLiveRegion="polite">{chat.error}</Text>
+            )}
             <TieuDeManHinh
               title="Cùng trò chuyện"
               eyebrow={`Chào ${firstName}, hôm nay thế nào?`}
@@ -81,8 +91,16 @@ export const HomeChat = ({ navigation }: ChatTabScreenProps<'Home'>) => {
         }
         ListEmptyComponent={
           <TrangRong
-            title="Không tìm thấy cuộc trò chuyện"
-            subtitle="Thử một tên hoặc nội dung tin nhắn khác nhé."
+            title={
+              query.trim()
+                ? 'Không tìm thấy cuộc trò chuyện'
+                : 'Chưa có cuộc trò chuyện'
+            }
+            subtitle={
+              query.trim()
+                ? 'Thử một tên hoặc nội dung tin nhắn khác nhé.'
+                : 'Vào Danh bạ và chọn một người để bắt đầu nhắn tin.'
+            }
           />
         }
         renderItem={({ item }) => (

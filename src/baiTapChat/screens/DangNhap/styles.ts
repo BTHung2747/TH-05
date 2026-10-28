@@ -1,6 +1,12 @@
 import { StyleSheet } from 'react-native';
 import { themeChat as theme } from '../../styles/theme';
 export const styles = StyleSheet.create({
+  error: {
+    color: theme.colors.error,
+    fontSize: 14,
+    lineHeight: 22,
+    marginTop: 16,
+  },
   screen: { flex: 1, backgroundColor: theme.colors.background },
   flex: { flex: 1 },
   content: {
@@ -58,6 +64,12 @@ export const styles = StyleSheet.create({
     marginTop: 4,
   },
   submitText: { fontSize: 16, fontWeight: '600', color: theme.colors.white },
+  demoHint: {
+    fontSize: 13,
+    lineHeight: 20,
+    color: theme.colors.secondary,
+    marginTop: 16,
+  },
   footer: {
     fontSize: 12,
     textAlign: 'center',

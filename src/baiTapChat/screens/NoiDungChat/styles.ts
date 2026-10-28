@@ -1,6 +1,13 @@
 import { StyleSheet } from 'react-native';
 import { themeChat as theme } from '../../styles/theme';
 export const styles = StyleSheet.create({
+  locationButton: {
+    width: 44,
+    height: 48,
+    alignItems: 'center',
+    justifyContent: 'center',
+  },
+  locationIcon: { fontSize: 24, color: theme.colors.primary },
   screen: { flex: 1, backgroundColor: theme.colors.background },
   header: {
     flexDirection: 'row',

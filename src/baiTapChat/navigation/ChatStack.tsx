@@ -1,6 +1,7 @@
 import React from 'react';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { DangNhapChat } from '../screens/DangNhap';
+import { DangKyChat } from '../screens/DangKy';
 import { NoiDungChat } from '../screens/NoiDungChat';
 import { useChat } from '../state/ChatContext';
 import { themeChat as theme } from '../styles/theme';
@@ -23,11 +24,10 @@ export const ChatStack = () => {
           <Stack.Screen name="NoiDungChat" component={NoiDungChat} />
         </Stack.Group>
       ) : (
-        <Stack.Screen
-          name="DangNhap"
-          component={DangNhapChat}
-          navigationKey="signed-out"
-        />
+        <Stack.Group navigationKey="signed-out">
+          <Stack.Screen name="DangNhap" component={DangNhapChat} />
+          <Stack.Screen name="DangKy" component={DangKyChat} />
+        </Stack.Group>
       )}
     </Stack.Navigator>
   );

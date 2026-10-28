@@ -1,5 +1,6 @@
 import React from 'react';
 import ReactTestRenderer from 'react-test-renderer';
+import { NavigationContainer } from '@react-navigation/native';
 import { ThoiTietHienTai } from '../src/components/ThoiTietHienTai';
 import { ThoiTietTheoGio } from '../src/components/ThoiTietTheoGio';
 import { ThoiTietTheoNgay } from '../src/components/ThoiTietTheoNgay';
@@ -20,7 +21,7 @@ describe('Weather Components', () => {
     await ReactTestRenderer.act(async () => {
       treeDefault = ReactTestRenderer.create(<ThoiTietTheoGio />);
       treeCustom = ReactTestRenderer.create(
-        <ThoiTietTheoGio time="12 giờ" status="Nắng" temp="30°C" />
+        <ThoiTietTheoGio time="12 giờ" status="Nắng" temp="30°C" />,
       );
     });
     expect(treeDefault).toBeDefined();
@@ -33,7 +34,7 @@ describe('Weather Components', () => {
     await ReactTestRenderer.act(async () => {
       treeDefault = ReactTestRenderer.create(<ThoiTietTheoNgay />);
       treeCustom = ReactTestRenderer.create(
-        <ThoiTietTheoNgay time="14 giờ" status="Mây" temp="28°C" />
+        <ThoiTietTheoNgay time="14 giờ" status="Mây" temp="28°C" />,
       );
     });
     expect(treeDefault).toBeDefined();
@@ -43,7 +44,11 @@ describe('Weather Components', () => {
   it('renders HomeScreen correctly', async () => {
     let tree;
     await ReactTestRenderer.act(async () => {
-      tree = ReactTestRenderer.create(<HomeScreen />);
+      tree = ReactTestRenderer.create(
+        <NavigationContainer>
+          <HomeScreen />
+        </NavigationContainer>,
+      );
     });
     expect(tree).toBeDefined();
   });

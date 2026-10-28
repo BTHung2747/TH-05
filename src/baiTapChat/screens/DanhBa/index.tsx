@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { FlatList, Keyboard, View } from 'react-native';
+import { Alert, FlatList, Keyboard, View } from 'react-native';
 import { SafeAreaView } from 'react-native-safe-area-context';
 import type { ChatTabScreenProps } from '../../navigation/types';
 import { HangDanhBa } from '../../components/HangDanhBa';
@@ -49,11 +49,19 @@ export const DanhBaChat = ({ navigation }: ChatTabScreenProps<'DanhBa'>) => {
         renderItem={({ item }) => (
           <HangDanhBa
             user={item}
-            onPress={() => {
+            onPress={async () => {
               Keyboard.dismiss();
-              navigation.navigate('NoiDungChat', {
-                troChuyenId: chat.moChat(item.id),
-              });
+              try {
+                navigation.navigate('NoiDungChat', {
+                  troChuyenId: await chat.moChat(item.id),
+                  nguoiDungId: item.id,
+                });
+              } catch {
+                Alert.alert(
+                  'Không mở được trò chuyện',
+                  'Kiểm tra mạng và thử lại.',
+                );
+              }
             }}
           />
         )}

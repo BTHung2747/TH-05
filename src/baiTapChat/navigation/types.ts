@@ -13,8 +13,9 @@ export type ChatTabs = {
 };
 export type ChatRoutes = {
   DangNhap: undefined;
+  DangKy: undefined;
   Chinh: NavigatorScreenParams<ChatTabs> | undefined;
-  NoiDungChat: { troChuyenId: string };
+  NoiDungChat: { troChuyenId: string; nguoiDungId?: string };
 };
 export type ChatTabScreenProps<Name extends keyof ChatTabs> =
   CompositeScreenProps<

@@ -15,9 +15,13 @@ import { useChat } from '../../state/ChatContext';
 import { themeChat as theme } from '../../styles/theme';
 import { kiemTraDangNhap } from '../../utils/dangNhap';
 import { styles } from './styles';
+import type { NativeStackScreenProps } from '@react-navigation/native-stack';
+import type { ChatRoutes } from '../../navigation/types';
 
-export const DangNhapChat = () => {
-  const { dangNhap, moDuAnCu } = useChat();
+export const DangNhapChat = ({
+  navigation,
+}: NativeStackScreenProps<ChatRoutes, 'DangNhap'>) => {
+  const { dangNhap, moDuAnCu, error, loading } = useChat();
   const [taiKhoan, setTaiKhoan] = useState('');
   const [matKhau, setMatKhau] = useState('');
   const [errors, setErrors] = useState<ReturnType<typeof kiemTraDangNhap>>({
@@ -26,7 +30,8 @@ export const DangNhapChat = () => {
   });
   const accountRef = useRef<ONhapRef>(null);
   const passwordRef = useRef<ONhapRef>(null);
-  const submit = () => {
+  const submit = async () => {
+    if (loading) return;
     const nextErrors = kiemTraDangNhap(taiKhoan, matKhau);
     setErrors(nextErrors);
     if (nextErrors.taiKhoan) {
@@ -38,7 +43,7 @@ export const DangNhapChat = () => {
       return;
     }
     Keyboard.dismiss();
-    dangNhap(taiKhoan, matKhau);
+    await dangNhap(taiKhoan, matKhau);
   };
   return (
     <SafeAreaView style={styles.screen}>
@@ -65,8 +70,9 @@ export const DangNhapChat = () => {
             <View style={styles.form}>
               <ONhap
                 ref={accountRef}
-                label="Tài khoản"
-                placeholder="Nhập tài khoản"
+                label="Email"
+                placeholder="Nhập email đã đăng ký"
+                keyboardType="email-address"
                 value={taiKhoan}
                 error={errors.taiKhoan}
                 onChangeText={value => {
@@ -99,15 +105,33 @@ export const DangNhapChat = () => {
                 onSubmitEditing={submit}
               />
               <TouchableOpacity
+                disabled={loading}
                 onPress={submit}
                 activeOpacity={0.7}
                 style={styles.submit}
                 accessibilityRole="button"
+                accessibilityLabel="Đăng nhập"
               >
-                <Text style={styles.submitText}>Đăng nhập</Text>
+                <Text style={styles.submitText}>
+                  {loading ? 'Đang kết nối…' : 'Đăng nhập'}
+                </Text>
                 <BieuTuong name="next" color={theme.colors.white} size={20} />
               </TouchableOpacity>
             </View>
+            {!!error && (
+              <Text style={styles.error} accessibilityLiveRegion="polite">
+                {error}
+              </Text>
+            )}
+            <TouchableOpacity
+              accessibilityRole="button"
+              accessibilityLabel="Tạo tài khoản"
+              onPress={() => navigation.navigate('DangKy')}
+              disabled={loading}
+              style={styles.legacy}
+            >
+              <Text style={styles.legacyText}>Chưa có tài khoản? Đăng ký</Text>
+            </TouchableOpacity>
             <Text style={styles.footer}>
               Kết nối lớp học · Chia sẻ mỗi ngày
             </Text>

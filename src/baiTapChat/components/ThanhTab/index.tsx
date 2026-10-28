@@ -22,7 +22,7 @@ const icons: Record<keyof ChatTabs, ChatIconName> = {
 };
 
 export const ThanhTab = ({ state, navigation, insets }: BottomTabBarProps) => {
-  const { thongBao, hienThiBadge } = useChat();
+  const { thongBao, troChuyen, hienThiBadge } = useChat();
   const [keyboardOpen, setKeyboardOpen] = useState(false);
   useEffect(() => {
     const show = Keyboard.addListener('keyboardDidShow', () =>
@@ -38,6 +38,10 @@ export const ThanhTab = ({ state, navigation, insets }: BottomTabBarProps) => {
   }, []);
   if (keyboardOpen) return null;
   const unread = thongBao.filter(item => !item.daDoc).length;
+  const unreadMessages = troChuyen.reduce(
+    (total, conversation) => total + conversation.soChuaDoc,
+    0,
+  );
   return (
     <View
       style={[
@@ -53,7 +57,13 @@ export const ThanhTab = ({ state, navigation, insets }: BottomTabBarProps) => {
         {state.routes.map((route, index) => {
           const name = route.name as keyof ChatTabs;
           const selected = state.index === index;
-          const badge = name === 'ThongBao' && hienThiBadge ? unread : 0;
+          const badge = hienThiBadge
+            ? name === 'Home'
+              ? unreadMessages
+              : name === 'ThongBao'
+              ? unread
+              : 0
+            : 0;
           const onPress = () => {
             Keyboard.dismiss();
             const event = navigation.emit({
@@ -76,7 +86,11 @@ export const ThanhTab = ({ state, navigation, insets }: BottomTabBarProps) => {
               accessibilityRole="tab"
               accessibilityState={{ selected }}
               accessibilityLabel={`${labels[name]}${
-                badge ? `, ${badge} thông báo chưa đọc` : ''
+                badge
+                  ? `, ${badge} ${
+                      name === 'Home' ? 'tin nhắn' : 'thông báo'
+                    } chưa đọc`
+                  : ''
               }`}
               style={[styles.tab, selected && styles.selected]}
             >

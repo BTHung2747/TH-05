@@ -9,6 +9,7 @@ export interface NguoiDung {
   laNhom?: boolean;
 }
 export interface TaiKhoan {
+  id?: string;
   taiKhoan: string;
   tenHienThi: string;
   avatar: ImageSourcePropType;
@@ -19,6 +20,7 @@ export interface TroChuyen {
   soChuaDoc: number;
 }
 export interface TinNhan {
+  viTri?: { latitude: number; longitude: number };
   id: string;
   troChuyenId: string;
   nguoiGuiId: string;

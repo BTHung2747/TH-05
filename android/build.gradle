@@ -19,3 +19,15 @@ buildscript {
 }
 
 apply plugin: "com.facebook.react.rootproject"
+
+// Geolocation 3.4.0 declares AGP 3.5.3 in its own buildscript. Reuse the
+// project's installed AGP instead of downloading an obsolete second toolchain.
+subprojects {
+    buildscript.configurations.configureEach {
+        resolutionStrategy.eachDependency { details ->
+            if (details.requested.group == "com.android.tools.build" && details.requested.name == "gradle") {
+                details.useVersion(com.android.Version.ANDROID_GRADLE_PLUGIN_VERSION)
+            }
+        }
+    }
+}

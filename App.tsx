@@ -1,5 +1,8 @@
 import React from 'react';
-import { SafeAreaProvider } from 'react-native-safe-area-context';
+import {
+  initialWindowMetrics,
+  SafeAreaProvider,
+} from 'react-native-safe-area-context';
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import { HomeScreen } from './src/screens/HomeScreen';
@@ -34,7 +37,7 @@ const DuAnCu = () => (
 
 function App(): React.JSX.Element {
   return (
-    <SafeAreaProvider>
+    <SafeAreaProvider initialMetrics={initialWindowMetrics}>
       <NavigationContainer>
         <RootStack.Navigator
           initialRouteName="BaiTapChat"

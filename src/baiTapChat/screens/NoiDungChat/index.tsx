@@ -1,6 +1,7 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useCallback, useRef, useState } from 'react';
 import {
   FlatList,
+  Alert,
   KeyboardAvoidingView,
   Platform,
   Text,
@@ -19,6 +20,7 @@ import { useChat } from '../../state/ChatContext';
 import { themeChat as theme } from '../../styles/theme';
 import { dinhDangNgay } from '../../utils/thoiGian';
 import { styles } from './styles';
+import { useFocusEffect } from '@react-navigation/native';
 
 export const NoiDungChat = ({
   navigation,
@@ -28,18 +30,50 @@ export const NoiDungChat = ({
   const { troChuyenId } = route.params;
   const conversation = chat.troChuyen.find(item => item.id === troChuyenId);
   const user = chat.nguoiDung.find(
-    item => item.id === conversation?.nguoiDungId,
+    item => item.id === (conversation?.nguoiDungId || route.params.nguoiDungId),
   );
   const messages = chat.tinNhan[troChuyenId] || [];
   const listRef = useRef<FlatList<TinNhan>>(null);
   const [text, setText] = useState('');
-  const docChatRef = useRef(chat.docChat);
-  docChatRef.current = chat.docChat;
-  useEffect(() => {
-    docChatRef.current(troChuyenId);
-  }, [troChuyenId]);
-  const send = () => {
-    if (chat.guiTin(troChuyenId, text)) setText('');
+  const [sending, setSending] = useState(false);
+  const [locating, setLocating] = useState(false);
+  const chatRef = useRef(chat);
+  chatRef.current = chat;
+  useFocusEffect(
+    useCallback(() => {
+      chatRef.current.docChat(troChuyenId);
+      return () => chatRef.current.dongChat(troChuyenId);
+    }, [troChuyenId]),
+  );
+  const send = async () => {
+    if (sending || !text.trim()) return;
+    const draft = text;
+    setSending(true);
+    try {
+      if (await chat.guiTin(troChuyenId, draft))
+        setText(current => (current === draft ? '' : current));
+      else
+        Alert.alert(
+          'Chưa gửi được tin',
+          'Kiểm tra kết nối và thử lại. Nội dung đã được giữ lại.',
+        );
+    } finally {
+      setSending(false);
+    }
+  };
+  const sendLocation = async () => {
+    if (locating) return;
+    setLocating(true);
+    try {
+      await chat.guiViTri(troChuyenId);
+    } catch (cause) {
+      Alert.alert(
+        'Gửi vị trí',
+        cause instanceof Error ? cause.message : 'Không gửi được vị trí.',
+      );
+    } finally {
+      setLocating(false);
+    }
   };
   const scrollToEnd = () =>
     requestAnimationFrame(() =>
@@ -127,6 +161,15 @@ export const NoiDungChat = ({
           )}
         />
         <View style={styles.composer}>
+          <TouchableOpacity
+            onPress={sendLocation}
+            disabled={locating}
+            style={styles.locationButton}
+            accessibilityRole="button"
+            accessibilityLabel="Gửi vị trí hiện tại"
+          >
+            <Text style={styles.locationIcon}>{locating ? '…' : '📍'}</Text>
+          </TouchableOpacity>
           <TextInput
             style={styles.input}
             value={text}
@@ -140,8 +183,8 @@ export const NoiDungChat = ({
           />
           <TouchableOpacity
             onPress={send}
-            disabled={!text.trim()}
-            accessibilityState={{ disabled: !text.trim() }}
+            disabled={!text.trim() || sending}
+            accessibilityState={{ disabled: !text.trim() || sending }}
             accessibilityRole="button"
             accessibilityLabel="Gửi tin nhắn"
             activeOpacity={0.65}

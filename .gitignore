@@ -65,6 +65,27 @@ yarn-error.log
 
 # testing
 /coverage
+/.cache/
+
+# Local assistant and editor configuration
+AGENTS.md
+AGENTS.override.md
+CLAUDE.md
+GEMINI.md
+.agents/
+.codex/
+.claude/
+.cursor/
+.windsurf/
+.roo/
+.opencode/
+.aider*
+.github/copilot-instructions.md
+.github/instructions/
+.github/prompts/
+.vscode/
+.env
+.env.*
 
 # Yarn
 .yarn/*

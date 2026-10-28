@@ -21,6 +21,11 @@ export const CaiDatChat = () => {
           title="Cài đặt"
           subtitle="Tài khoản và trạng thái của bạn"
         />
+        {!!chat.error && (
+          <Text style={styles.description} accessibilityLiveRegion="polite">
+            {chat.error}
+          </Text>
+        )}
         <View style={styles.profile}>
           <AnhDaiDien
             source={account.avatar}
@@ -62,8 +67,10 @@ export const CaiDatChat = () => {
           </View>
           <View style={styles.row}>
             <View style={styles.copy}>
-              <Text style={styles.label}>Số thông báo chưa đọc</Text>
-              <Text style={styles.description}>Hiển thị số trên thanh tab</Text>
+              <Text style={styles.label}>Hiển thị số chưa đọc</Text>
+              <Text style={styles.description}>
+                Tin nhắn và thông báo trên thanh tab
+              </Text>
             </View>
             <Switch
               style={styles.switch}
@@ -75,7 +82,7 @@ export const CaiDatChat = () => {
               }}
               thumbColor={theme.colors.white}
               ios_backgroundColor={theme.colors.border}
-              accessibilityLabel="Hiển thị số thông báo chưa đọc trên thanh tab"
+              accessibilityLabel="Hiển thị số chưa đọc trên thanh tab"
             />
           </View>
         </View>
@@ -84,6 +91,7 @@ export const CaiDatChat = () => {
           activeOpacity={0.65}
           style={styles.logout}
           accessibilityRole="button"
+          accessibilityLabel="Đăng xuất"
         >
           <BieuTuong name="logout" color={theme.colors.primary} size={22} />
           <Text style={styles.logoutText}>Đăng xuất</Text>
